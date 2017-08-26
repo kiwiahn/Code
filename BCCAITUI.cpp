@@ -10,7 +10,6 @@ int knapSack(int W, int wt[], int val[], int n)
    int i, w;
    int K[n+1][W+1];
  
-   // Build table K[][] in bottom up manner
    for (i = 0; i <= n; i++)
    {
        for (w = 0; w <= W; w++)
