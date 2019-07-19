@@ -1,4 +1,3 @@
-
 .386
 .model flat, stdcall
 option casemap:none
@@ -20,11 +19,14 @@ includelib E:\masm32\lib\masm32.lib
 .data
 	x word 360
 	y word 150
+	string db 20 dup(0)
 	
 .code
 start proc
-	mov ax, dword ptr [x]
-	mov bx, dword ptr [y]
+	xor eax, eax
+	xor ebx, ebx
+	mov ax, word ptr [x]
+	mov bx, word ptr [y]
 	test eax, eax
 	jns check_y
 	neg ax
@@ -37,6 +39,13 @@ Find_GCD:
 	push ebx
 	push eax
 	call GCD
+	add esp, 08h
+	
+	push eax
+	call itoa
+	
+	push eax
+	call StdOut
 	
 ;;Exit
 Exit:
@@ -46,11 +55,54 @@ Exit:
 GCD proc
 	push ebp
 	mov ebp, esp
+	mov eax, [ebp + 08h]
+	mov ebx, [ebp + 0Ch]
+loop_GCD:
+	xor edx, edx
+	div ebx
+	mov eax, ebx
+	mov ebx, edx
+	cmp ebx, 0
+	jnz loop_GCD
 	
-
 	pop ebp
 	ret 8
 GCD endp
+
+itoa proc
+	push ebp
+	mov ebp, esp
+	xor eax, eax
+	mov eax, [ebp + 08h]
+	mov ecx, offset string
+	push 69h
+	mov ebx, 10
+	
+		
+loop_itoa:
+	xor edx, edx
+	div ebx
+	add dl, 30h
+	xor dh, dh
+	push edx
+	cmp eax, 0
+	jnz loop_itoa
+	
+
+done_itoa:
+	xor ebx, ebx
+	pop ebx
+	cmp ebx, 69h
+	jz 	OutHere
+	mov byte ptr [ecx], bl
+	inc ecx
+	jmp done_itoa
+
+OutHere:	
+	mov eax, offset string
+	pop ebp
+	ret
+itoa endp
 	
 start endp
 End start
